@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cascade Dual-Loop Buck Converter | Control Systems Studio</title>
+    <!-- Google Fonts: Outfit, Inter, Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="brand-title">
+                <div class="logo-icon">
+                    <i data-lucide="zap"></i>
+                </div>
+                <div>
+                    <h1>CASCADE <span class="highlight-red">BUCK</span> CONTROL STUDIO</h1>
+                    <p class="subtitle">Voltage-Current Controlled Buck Converter (12V → 5V, 1.5A Max)</p>
+                </div>
+            </div>
+
+            <div class="header-status">
+                <div class="status-badge live-status">
+                    <span class="pulse-dot"></span>
+                    <span id="system-status-text">10 kHz Inner ISR / 1 kHz Outer Loop Active</span>
+                </div>
+                <div class="mcu-badge">
+                    <i data-lucide="cpu"></i>
+                    <span>Target: Arduino Uno (ATmega328P)</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- NAVIGATION TABS -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="simulator">
+                <i data-lucide="activity"></i> Real-Time Simulator
+            </button>
+            <button class="nav-tab" data-tab="blockdiagram">
+                <i data-lucide="git-merge"></i> Control Architecture
+            </button>
+            <button class="nav-tab" data-tab="firmware">
+                <i data-lucide="code-2"></i> Firmware &amp; Pins
+            </button>
+            <button class="nav-tab" data-tab="guide">
+                <i data-lucide="book-open"></i> Project Execution Guide
+            </button>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+
+            <!-- TAB 1: REAL-TIME SIMULATOR -->
+            <section id="tab-simulator" class="tab-panel active">
+                <div class="sim-grid">
+                    <!-- LEFT COLUMN: CONTROLS & SLIDERS -->
+                    <div class="control-panel glass-card">
+                        <div class="card-header">
+                            <h2><i data-lucide="sliders"></i> System &amp; Control Parameters</h2>
+                            <button id="btn-reset-params" class="btn-ghost" title="Reset Default Parameters">
+                                <i data-lucide="rotate-ccw"></i> Reset
+                            </button>
+                        </div>
+
+                        <!-- PRESET ACTION BUTTONS -->
+                        <div class="preset-actions">
+                            <span class="action-label">Quick Test Events:</span>
+                            <div class="btn-group">
+                                <button id="btn-softstart" class="btn-action btn-white">
+                                    <i data-lucide="play"></i> Soft-Start Ramp
+                                </button>
+                                <button id="btn-step-load" class="btn-action btn-red">
+                                    <i data-lucide="zap"></i> Step Load (10Ω → 3.3Ω)
+                                </button>
+                                <button id="btn-short-circuit" class="btn-action btn-outline-red">
+                                    <i data-lucide="alert-triangle"></i> Short Circuit (1.0Ω)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SLIDERS CONTAINER -->
+                        <div class="sliders-wrapper">
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <label for="slider-vin">Input Voltage (Vin)</label>
+                                    <span id="val-vin" class="slider-val">12.0 V</span>
+                                </div>
+                                <input type="range" id="slider-vin" min="8.0" max="24.0" step="0.5" value="12.0">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <label for="slider-vref">Target Voltage (Vref)</label>
+                                    <span id="val-vref" class="slider-val text-red">5.0 V</span>
+                                </div>
+                                <input type="range" id="slider-vref" min="1.0" max="10.0" step="0.1" value="5.0">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <label for="slider-irefmax">Current Safety Limit (Iref max)</label>
+                                    <span id="val-irefmax" class="slider-val highlight-danger">1.50 A</span>
+                                </div>
+                                <input type="range" id="slider-irefmax" min="0.5" max="3.0" step="0.1" value="1.5">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <label for="slider-rload">Load Resistance (Rload)</label>
+                                    <span id="val-rload" class="slider-val">10.0 Ω</span>
+                                </div>
+                                <input type="range" id="slider-rload" min="1.0" max="50.0" step="0.5" value="10.0">
+                            </div>
+
+                            <div class="slider-row">
+                                <div class="slider-group">
+                                    <div class="slider-header">
+                                        <label for="slider-inductor">Inductor (L)</label>
+                                        <span id="val-inductor" class="slider-val">100 µH</span>
+                                    </div>
+                                    <input type="range" id="slider-inductor" min="30" max="500" step="10" value="100">
+                                </div>
+                                <div class="slider-group">
+                                    <div class="slider-header">
+                                        <label for="slider-capacitor">Capacitor (C)</label>
+                                        <span id="val-capacitor" class="slider-val">470 µF</span>
+                                    </div>
+                                    <input type="range" id="slider-capacitor" min="100" max="1000" step="10" value="470">
+                                </div>
+                            </div>
+
+                            <!-- ADVANCED GAINS TUNING -->
+                            <div class="accordion-section">
+                                <button class="accordion-toggle" id="toggle-gains">
+                                    <span><i data-lucide="sliders-horizontal"></i> Advanced PI Gain Adjustment</span>
+                                    <i data-lucide="chevron-down" class="chevron"></i>
+                                </button>
+                                <div class="accordion-content hidden" id="gains-content">
+                                    <div class="gain-grid">
+                                        <div class="gain-box">
+                                            <h4 class="text-red">Outer Voltage Loop (1 kHz)</h4>
+                                            <div class="slider-group">
+                                                <label>Kp_v: <span id="val-kpv" class="text-red">0.5906</span></label>
+                                                <input type="range" id="slider-kpv" min="0.05" max="2.0" step="0.01" value="0.5906">
+                                            </div>
+                                            <div class="slider-group">
+                                                <label>Ki_v: <span id="val-kiv" class="text-red">125.66</span></label>
+                                                <input type="range" id="slider-kiv" min="10.0" max="500.0" step="1.0" value="125.66">
+                                            </div>
+                                        </div>
+                                        <div class="gain-box">
+                                            <h4 class="text-white">Inner Current Loop (10 kHz)</h4>
+                                            <div class="slider-group">
+                                                <label>Kp_i: <span id="val-kpi">0.1047</span></label>
+                                                <input type="range" id="slider-kpi" min="0.01" max="0.5" step="0.005" value="0.1047">
+                                            </div>
+                                            <div class="slider-group">
+                                                <label>Ki_i: <span id="val-kii">22.28</span></label>
+                                                <input type="range" id="slider-kii" min="1.0" max="100.0" step="0.5" value="22.28">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button id="btn-recalc-gains" class="btn-secondary btn-full">
+                                        <i data-lucide="wand-2"></i> Auto-Calculate Optimal Gains
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: CANVASES & WAVEFORMS -->
+                    <div class="waveforms-panel">
+                        <!-- REALTIME METRICS BAR -->
+                        <div class="metrics-bar glass-card">
+                            <div class="metric-item">
+                                <span class="metric-label">Measured Vout</span>
+                                <span id="metric-vout" class="metric-value color-white">5.00 V</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Inductor Current IL</span>
+                                <span id="metric-il" class="metric-value color-red">0.50 A</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Clamped Target Iref</span>
+                                <span id="metric-iref" class="metric-value color-white">0.50 A</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">PWM Duty Cycle</span>
+                                <span id="metric-duty" class="metric-value color-red">41.7 %</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Protection Mode</span>
+                                <span id="metric-mode" class="metric-badge badge-success">NORMAL REGULATION</span>
+                            </div>
+                        </div>
+
+                        <!-- CANVAS 1: Output Voltage -->
+                        <div class="chart-card glass-card">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <span class="legend-dot dot-white"></span>
+                                    <h3>Output Voltage Vout (V) vs Target Vref</h3>
+                                </div>
+                                <span class="time-scale">Window: 100 ms</span>
+                            </div>
+                            <div class="canvas-container">
+                                <canvas id="canvas-vout" width="800" height="180"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- CANVAS 2: Inductor Current & Clamped Reference -->
+                        <div class="chart-card glass-card">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <span class="legend-dot dot-red"></span>
+                                    <h3>Inductor Current IL (A) &amp; Clamped Reference Iref</h3>
+                                </div>
+                                <div class="chart-legend">
+                                    <span class="legend-item"><span class="legend-dot dot-red"></span> IL</span>
+                                    <span class="legend-item"><span class="legend-dot dot-white-dashed"></span> Iref Command</span>
+                                    <span class="legend-item"><span class="legend-dot dot-red-dash"></span> 1.5A Limit</span>
+                                </div>
+                            </div>
+                            <div class="canvas-container">
+                                <canvas id="canvas-current" width="800" height="180"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- CANVAS 3: PWM Duty Cycle -->
+                        <div class="chart-card glass-card">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <span class="legend-dot dot-white"></span>
+                                    <h3>PWM Duty Cycle (%)</h3>
+                                </div>
+                                <span id="pwm-freq-label" class="time-scale">PWM Frequency: 10.0 kHz</span>
+                            </div>
+                            <div class="canvas-container">
+                                <canvas id="canvas-duty" width="800" height="120"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: BLOCK DIAGRAM ARCHITECTURE -->
+            <section id="tab-blockdiagram" class="tab-panel">
+                <div class="diagram-container glass-card">
+                    <div class="card-header">
+                        <h2><i data-lucide="git-merge"></i> Interactive Dual-Loop Control Architecture</h2>
+                        <p>Outer Voltage Loop (1 kHz) generates clamped Iref; Inner Current Loop (10 kHz) regulates PWM duty cycle.</p>
+                    </div>
+
+                    <div class="architecture-diagram">
+                        <div class="node node-input">
+                            <div class="node-title">Voltage Reference</div>
+                            <div class="node-val color-red" id="node-vref">Vref = 5.0 V</div>
+                        </div>
+
+                        <div class="signal-arrow">
+                            <i data-lucide="arrow-right"></i>
+                        </div>
+
+                        <div class="node node-loop outer-loop-node">
+                            <div class="loop-badge badge-slow">Outer Loop (1 kHz / 1 ms)</div>
+                            <div class="node-title">Voltage PI Controller</div>
+                            <div class="node-sub">Computes needed current Iref</div>
+                            <div class="clamp-box">
+                                <i data-lucide="shield-alert"></i> Clamped: Max <span id="node-clamp">1.50 A</span>
+                            </div>
+                        </div>
+
+                        <div class="signal-arrow">
+                            <span class="signal-label" id="node-iref-val">Iref = 0.50 A</span>
+                            <i data-lucide="arrow-right"></i>
+                        </div>
+
+                        <div class="node node-loop inner-loop-node">
+                            <div class="loop-badge badge-fast">Inner Loop (10 kHz / 100 µs)</div>
+                            <div class="node-title">Current PI Controller</div>
+                            <div class="node-sub">Adjusts Duty Cycle D directly</div>
+                            <div class="feedforward-tag">+ Feedforward (Vout/Vin)</div>
+                        </div>
+
+                        <div class="signal-arrow">
+                            <span class="signal-label" id="node-duty-val">Duty = 41.7%</span>
+                            <i data-lucide="arrow-right"></i>
+                        </div>
+
+                        <div class="node node-hardware">
+                            <div class="node-title">Buck Hardware Stage</div>
+                            <div class="node-sub">MOSFET + Driver + L + C</div>
+                            <div class="hw-values">
+                                <div>Vin = 12V</div>
+                                <div>L = 100µH</div>
+                                <div>C = 470µF</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPARISON TABLE -->
+                    <div class="loop-comparison-grid">
+                        <div class="loop-card outer-card">
+                            <h3><i data-lucide="clock"></i> Outer Voltage Loop (Slow / Strategic)</h3>
+                            <ul>
+                                <li><strong>Sampling Frequency:</strong> 1 kHz (Every 1 ms)</li>
+                                <li><strong>Primary Task:</strong> Compares output voltage Vout against target Vref.</li>
+                                <li><strong>Output Command:</strong> Target inductor current reference Iref.</li>
+                                <li><strong>Safety Protection:</strong> Hard software clamp on Iref prevents MOSFET thermal destruction during short circuits.</li>
+                            </ul>
+                        </div>
+
+                        <div class="loop-card inner-card card-red-border">
+                            <h3 class="color-red"><i data-lucide="zap"></i> Inner Current Loop (Fast / Tactical)</h3>
+                            <ul>
+                                <li><strong>Sampling Frequency:</strong> 10 kHz (Every 100 µs in Timer 1 ISR)</li>
+                                <li><strong>Primary Task:</strong> Measures instantaneous inductor current IL, compares with Iref.</li>
+                                <li><strong>Output Command:</strong> Hardware Timer OCR1A PWM register duty cycle.</li>
+                                <li><strong>Bandwidth Advantage:</strong> Absorbs input voltage spikes and sudden load changes instantly.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: FIRMWARE & PINS -->
+            <section id="tab-firmware" class="tab-panel">
+                <div class="firmware-grid">
+                    <!-- PINOUT & HARDWARE SUMMARY -->
+                    <div class="pinout-card glass-card">
+                        <h3><i data-lucide="cpu"></i> Arduino Uno Wiring &amp; Pinout</h3>
+                        <div class="pin-list">
+                            <div class="pin-item">
+                                <span class="pin-tag pin-pwm">Pin 9 (OC1A)</span>
+                                <div class="pin-desc">
+                                    <strong>MOSFET Gate Driver Input</strong>
+                                    <p>10 kHz Fast PWM output (Timer 1, 1600 steps resolution).</p>
+                                </div>
+                            </div>
+                            <div class="pin-item">
+                                <span class="pin-tag pin-analog">Pin A0</span>
+                                <div class="pin-desc">
+                                    <strong>Output Voltage Sensor (Vout)</strong>
+                                    <p>Divider: R1 = 10kΩ, R2 = 4.7kΩ (Scale factor: 3.1276).</p>
+                                </div>
+                            </div>
+                            <div class="pin-item">
+                                <span class="pin-tag pin-analog">Pin A1</span>
+                                <div class="pin-desc">
+                                    <strong>Inductor Current Sensor (IL)</strong>
+                                    <p>ACS712-05B module (185 mV/A) or Low-Side 0.1Ω Shunt + Op-Amp.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FORMATTED TIMER SPECS BOX FIXED INSIDE BOX -->
+                        <div class="timer-specs">
+                            <div class="timer-specs-head">
+                                <span>Timer 1 Setup (10 kHz PWM)</span>
+                                <span class="badge-tag-red">10 kHz ISR</span>
+                            </div>
+                            <pre><code>// TOP value for 10 kHz PWM
+ICR1   = 1599;
+// Fast PWM Mode 14
+TCCR1A = _BV(COM1A1) | _BV(WGM11);
+TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS10);
+// Enable 10 kHz COMPA ISR
+TIMSK1 = _BV(OCIE1A);</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- CODE VIEWER -->
+                    <div class="code-card glass-card">
+                        <div class="card-header">
+                            <h2><i data-lucide="file-code"></i> main_arduino.ino Firmware Code</h2>
+                            <button id="btn-copy-code" class="btn-action btn-red">
+                                <i data-lucide="copy"></i> Copy Code
+                            </button>
+                        </div>
+
+                        <div class="code-container">
+                            <pre><code id="firmware-code-block">// Loading code snippet...</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: PROJECT EXECUTION GUIDE -->
+            <section id="tab-guide" class="tab-panel">
+                <div class="guide-container glass-card">
+                    <h2><i data-lucide="book-open"></i> 4-Stage Execution Roadmap (2nd-Year Control Systems)</h2>
+
+                    <div class="roadmap-steps">
+                        <div class="roadmap-card">
+                            <div class="stage-number">Stage 1</div>
+                            <div class="stage-body">
+                                <h3>System Modeling &amp; Frequency Analysis (~10 Hours)</h3>
+                                <p>Derive plant transfer functions Gid(s) = Vin / (sL) and Gvi(s) = 1 / (sC). Tune inner loop crossover at 2 kHz (Kp_i = 0.1047, Ki_i = 22.28) and outer loop crossover at 200 Hz (Kp_v = 0.5906, Ki_v = 125.66).</p>
+                                <div class="stage-footer">
+                                    <span class="badge-done"><i data-lucide="check-circle-2"></i> Verified in Python Simulation</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="roadmap-card">
+                            <div class="stage-number">Stage 2</div>
+                            <div class="stage-body">
+                                <h3>Hardware Assembly &amp; Open-Loop Verification (~15 Hours)</h3>
+                                <p>Assemble power stage with IRF540N MOSFET, 1N5822 Schottky diode, 100µH inductor, 470µF capacitor, and IR2104 gate driver. Perform open-loop PWM test at 30% duty cycle to verify 3.6V output.</p>
+                                <div class="stage-footer">
+                                    <span class="badge-done"><i data-lucide="check-circle-2"></i> Schematic &amp; BOM Complete</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="roadmap-card">
+                            <div class="stage-number">Stage 3</div>
+                            <div class="stage-body">
+                                <h3>Microcontroller Firmware (Arduino Uno C Code) (~15 Hours)</h3>
+                                <p>Implement deterministic 10 kHz Timer 1 ISR interrupt for inner loop current control, anti-windup PI accumulators, soft-start reference ramping, and 1.5A current clamping.</p>
+                                <div class="stage-footer">
+                                    <span class="badge-done"><i data-lucide="check-circle-2"></i> Ready to Flash (main_arduino.ino)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="roadmap-card">
+                            <div class="stage-number">Stage 4</div>
+                            <div class="stage-body">
+                                <h3>Testing &amp; Demonstration (~10 Hours)</h3>
+                                <p>1. Static Regulation: Verify Vout = 5.00V ± 0.05V.<br>
+                                2. Transient Step-Load: Test 10Ω → 3.3Ω load jump.<br>
+                                3. Short-Circuit Protection: Demo 1.5A hard current clamping without MOSFET damage.</p>
+                                <div class="stage-footer">
+                                    <span class="badge-done"><i data-lucide="check-circle-2"></i> Demo Protocol Ready</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
