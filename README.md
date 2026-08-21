@@ -1,6 +1,6 @@
 # Cascade (Dual-Loop) Voltage-Current Controlled Buck Converter
 > **2nd-Year Control Systems Engineering Project**  
-> Complete Hardware, Simulation, Firmware & Interactive Studio
+> Complete Hardware, Simulation, Firmware, Simulink Models & Interactive Studio
 
 ---
 
@@ -30,18 +30,20 @@ By separating control bandwidths—making the inner current loop 10 times faster
 
 ```
 Cascade Buck Converter/
-├── index.html                 # Interactive Web UI Studio
-├── styles.css                 # Web UI Stylesheet (Red, Black, White Theme)
-├── app.js                     # Real-Time Browser Simulation Engine & Canvas Graphs
-├── README.md                  # Comprehensive Project Guide & Setup Manual
+├── index.html                         # Interactive Web UI Studio
+├── styles.css                         # Web UI Stylesheet (Red, Black, White Theme)
+├── app.js                             # Real-Time Browser Simulation Engine & Canvas Graphs
+├── README.md                          # Comprehensive Project Guide & Setup Manual
 ├── simulation/
-│   ├── plant_model.py         # Python Numerical Modeling & Simulation Script
-│   ├── simulation_results.csv # Exported Time-Domain Simulation Dataset
-│   └── simulation_results.svg # Generated Visual SVG Waveform Plot
+│   ├── plant_model.py                 # Python Numerical Modeling & Simulation Script
+│   ├── setup_cascade_buck_simulink.m  # MATLAB Script to Programmatically Create Simulink Model
+│   ├── simulink_guide.md              # Detailed Simulink Block Diagram & Simscape Guide
+│   ├── simulation_results.csv         # Exported Time-Domain Simulation Dataset
+│   └── simulation_results.svg         # Generated Visual SVG Waveform Plot
 └── firmware/
-    ├── cascade_control.h      # Hardware-Independent C Control Header
-    ├── cascade_control.c      # Dual-Loop PI Control & Anti-Windup Core
-    └── main_arduino.ino       # Arduino Uno Timer 1 Fast PWM & 10 kHz ISR Sketch
+    ├── cascade_control.h              # Hardware-Independent C Control Header
+    ├── cascade_control.c              # Dual-Loop PI Control & Anti-Windup Core
+    └── main_arduino.ino               # Arduino Uno Timer 1 Fast PWM & 10 kHz ISR Sketch
 ```
 
 ---
@@ -60,50 +62,29 @@ No installation required. You can launch the interactive simulation dashboard in
 - **Method B (Direct File)**:
   Double-click `index.html` to open it directly in any modern browser.
 
-**Web App Features:**
-- Adjust $V_{in}$, $V_{ref}$, safety limit $I_{ref\_max}$, $R_{load}$, $L$, $C$, and PI gains ($K_{p,v}, K_{i,v}, K_{p,i}, K_{i,i}$) with real-time slider updates.
-- One-click test triggers: **Soft-Start Ramp**, **Step Load ($10\Omega \rightarrow 3.3\Omega$)**, and **Short Circuit ($1.0\Omega$)**.
-- Dynamic real-time HTML5 Canvas plotting of $V_{out}$, $I_L$, $I_{ref}$, and PWM Duty Cycle.
+---
+
+### 2. MATLAB / Simulink Demonstration
+We provide an automated script [`simulation/setup_cascade_buck_simulink.m`](file:///c:/Users/hites/OneDrive/Documents/Projects%20&%20Research%20Work/Cascade%20(Dual-Loop)%20Voltage-Current%20Control%20of%20a%20Buck%20Converter/simulation/setup_cascade_buck_simulink.m) that programmatically builds and configures the complete Simulink model (`cascade_buck_simulink.slx`).
+
+1. Open MATLAB.
+2. Navigate to `simulation/` directory.
+3. Run `setup_cascade_buck_simulink`.
+4. MATLAB will generate the complete block diagram, configure discrete 10 kHz inner loop and 1 kHz outer loop PI controllers with 1.5A overcurrent clamping, and open the model for simulation.
+5. Refer to [`simulation/simulink_guide.md`](file:///c:/Users/hites/OneDrive/Documents/Projects%20&%20Research%20Work/Cascade%20(Dual-Loop)%20Voltage-Current%20Control%20of%20a%20Buck%20Converter/simulation/simulink_guide.md) for full block-by-block and Simscape Electrical physical circuit documentation.
 
 ---
 
-### 2. Python Plant Simulation (`simulation/plant_model.py`)
+### 3. Python Plant Simulation (`simulation/plant_model.py`)
 Run the mathematical model and discrete-time simulation in Python:
 
 ```bash
 python simulation/plant_model.py
 ```
 
-**Expected Output:**
-```text
-==================================================
-=== CASCADE CONTROL GAIN DERIVATION (STAGE 1) ===
-==================================================
-Inner Current Loop (10 kHz Sampling):
-  Target Crossover Bandwidth f_ci = 2000.0 Hz
-  Proportional Gain Kp_i         = 0.104720
-  Integral Gain     Ki_i         = 22.280799
-
-Outer Voltage Loop (1 kHz Sampling):
-  Target Crossover Bandwidth f_cv = 200.0 Hz
-  Proportional Gain Kp_v         = 0.590619
-  Integral Gain     Ki_v         = 125.663706
-==================================================
-
-Simulation dataset exported to 'simulation/simulation_results.csv'.
-Visual SVG plot saved to 'simulation/simulation_results.svg'.
-
---- SIMULATION METRICS & VERIFICATION ---
-Startup Time to 95% Vref (4.75V): 2.68 ms
-Steady-State Output Voltage (10 Ohm Load): 5.001 V (Target 5.00V)
-Step Load Response (3.33 Ohm / 1.5A Demand): Vout = 4.968 V, IL = 1.495 A
-Short Circuit / Overload Response (1.0 Ohm): Vout = 1.500 V, IL = 1.500 A (CLAMPED AT 1.5A!)
-==================================================
-```
-
 ---
 
-### 3. Microcontroller Firmware Setup (Arduino Uno)
+### 4. Microcontroller Firmware Setup (Arduino Uno)
 
 #### Hardware Pinout Mapping
 | Arduino Pin | Hardware Component | Function |
@@ -113,21 +94,12 @@ Short Circuit / Overload Response (1.0 Ohm): Vout = 1.500 V, IL = 1.500 A (CLAMP
 | **Pin A1** | ACS712-05B Sensor or Low-Side $0.1\Omega$ Shunt + Op-Amp | Inductor Current Sensing ($I_L$) |
 
 #### Timer 1 Register Setup (10 kHz ISR)
-The Arduino firmware configures Timer 1 for 10 kHz Fast PWM Mode (Mode 14, TOP = `ICR1 = 1599`):
 ```c
 ICR1   = 1599; // 10 kHz PWM TOP (16 MHz / 10 kHz - 1)
 TCCR1A = _BV(COM1A1) | _BV(WGM11); // Fast PWM Mode 14
 TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS10); // Prescaler = 1
 TIMSK1 = _BV(OCIE1A); // Enable 10 kHz COMPA Interrupt ISR
 ```
-
-#### Steps to Flash Firmware:
-1. Open Arduino IDE.
-2. Open `firmware/main_arduino.ino`.
-3. Ensure `cascade_control.h` and `cascade_control.c` are in the same folder.
-4. Select Board: **Arduino Uno**, Port: your COM port.
-5. Click **Upload**.
-6. Open Serial Monitor at **115200 baud** to view real-time telemetry.
 
 ---
 
