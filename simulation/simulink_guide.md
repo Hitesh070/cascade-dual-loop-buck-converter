@@ -1,98 +1,103 @@
 # Simulink Modeling & Demonstration Guide
 ## Cascade (Dual-Loop) Voltage-Current Controlled Buck Converter
 
-This document provides a complete guide for demonstrating the **Cascade Dual-Loop Controlled Buck Converter** in **MATLAB / Simulink**, including both the **Control Transfer Function Architecture** and physical **Simscape Electrical Power Stage**.
+This document provides a complete guide for demonstrating the **Cascade Dual-Loop Controlled Buck Converter** in **MATLAB / Simulink**, with both transfer function plant modeling and physical **Simscape Electrical** power stage circuits.
 
 ---
 
 ## 1. Complete Simulink Block Diagram Architecture
 
-Below is the complete Simulink system block diagram showing the nested dual-loop structure, sampling rates, feedforward term, and physical plant model:
+Below is the complete Simulink system architecture showing the nested dual-loop structure, discrete integrator sampling times, feedforward term, saturation safety limiters, and multi-channel scopes:
 
 ```
-                  OUTER VOLTAGE LOOP (1 kHz / 1 ms)                     INNER CURRENT LOOP (10 kHz / 100 us)
-          +----------------------------------------------+      +-----------------------------------+
-          |                                              |      |                                   |
-          v                                              |      v                                   |
-       +-----+   +---------------+   +----------------+  |   +-----+   +---------------+   +-----+  |   +-------------+   +-------------+
-Vref ->| +   |-->| Discrete PI   |-->| Clamping Gate  |--+-->| +   |-->| Discrete PI   |-->| PWM |--+-->| G_id(s)     |-->| G_vi(s)     |---+---> Vout
-(5V)   | -   |   | (1 kHz, 1 ms) |   | (Max Iref=1.5A)| Iref | -   |   | (10kHz, 100us)|   |Duty | d  | (Vin / sL)  | iL| (1 / sC)    |   |
-       +-----+   +---------------+   +----------------+      +-----+   +---------------+   +-----+    +-------------+   +-------------+   |
-          ^                                                     ^                                 ^          |                 |            |
-          |                                                     |                                 |          v                 |            |
-          |                                                     +---------------------------------+--[ Scope: I_L ]            |            |
-          |                                                     |                                                              |            |
-          +-----------------------------------------------------+--------------------------------------------------------------+------------+
-                                                                | (Feedforward Vout / Vin)
+               OUTER VOLTAGE LOOP (1 kHz / 1 ms)                     INNER CURRENT LOOP (10 kHz / 100 us)
+       +-----------------------------------------------+     +-----------------------------------+
+       |                                               |     |                                   |
+       v                                               |     v                                   |
+    +-----+   +-------------+   +-------------------+  |  +-----+   +-------------+   +-------+  |   +-------------+   +-------------+
+Vref| +   |-->| Discrete PI |-->| Saturation Clamp  |--+->| +   |-->| Discrete PI |-->| PWM   |--+-->| G_id(s)     |-->| G_vi(s)     |---+---> Vout (5V)
+(5V)| -   |   | (1 kHz, 1ms)|   | (Max Iref = 1.5A) |Iref | -   |   |(10kHz,100us)|   | Sat   |D |   | (Vin / sL)  | iL| (1 / sC)    |   |
+    +-----+   +-------------+   +-------------------+     +-----+   +-------------+   +-------+  |   +-------------+   +-------------+   |
+       ^                                                     ^                            ^      |          |                 |            |
+       |                                                     |                            |      |          v                 v            |
+       |                                                     | (Feedforward Vout / Vin)---+      |  [ Scope_IL_Track ] [ Scope_Vout_Track ]|
+       |                                                     |                                   |          |                 |            |
+       +-----------------------------------------------------+-----------------------------------+----------+                 |            |
+       |                                                                                                                      |            |
+       +----------------------------------------------------------------------------------------------------------------------+------------+
+                                                                                                 |
+                                                                              +------------------+------------------+
+                                                                              v                                     v
+                                                                   [ Scope_Duty_Cycle ]            [ Cascade_Master_Dashboard (3-Port) ]
 ```
 
 ---
 
 ## 2. Automatic Generation via MATLAB Script
 
-We have provided a automated MATLAB script [`setup_cascade_buck_simulink.m`](file:///c:/Users/hites/OneDrive/Documents/Projects%20&%20Research%20Work/Cascade%20(Dual-Loop)%20Voltage-Current%20Control%20of%20a%20Buck%20Converter/simulation/setup_cascade_buck_simulink.m) that programmatically builds and connects the entire Simulink model automatically.
+The automated MATLAB script [`setup_cascade_buck_simulink.m`](file:///c:/Users/hites/OneDrive/Documents/Projects%20&%20Research%20Work/Cascade%20(Dual-Loop)%20Voltage-Current%20Control%20of%20a%20Buck%20Converter/simulation/setup_cascade_buck_simulink.m) builds, parameters, wires, and saves `cascade_buck_simulink.slx` automatically.
 
 ### How to Run:
 1. Open MATLAB.
-2. Navigate to the project directory in MATLAB:
+2. In the MATLAB Command Window, navigate to the `simulation/` directory:
    ```matlab
    cd('simulation')
    ```
-3. Run the setup script:
+3. Run the script:
    ```matlab
    setup_cascade_buck_simulink
    ```
 4. The script will automatically:
-   - Load parameters ($V_{in} = 12\text{V}, V_{ref} = 5\text{V}, L = 100\mu\text{H}, C = 470\mu\text{F}, R = 10\Omega, I_{ref\_max} = 1.5\text{A}$).
-   - Compute PI controller gains ($K_{p,i} = 0.10472, K_{i,i} = 22.28, K_{p,v} = 0.59062, K_{i,v} = 125.66$).
-   - Create and open `cascade_buck_simulink.slx`.
-   - Wire all discrete controllers, clamping limiters, plant transfer functions, step load disturbance, and scopes.
+   - Compute exact discrete PI gains:
+     - Inner Current Loop ($10\text{ kHz}$): $K_{p,i} = \mathbf{0.104720}$, $K_{i,i} = \mathbf{22.280799}$
+     - Outer Voltage Loop ($1\text{ kHz}$): $K_{p,v} = \mathbf{0.590619}$, $K_{i,v} = \mathbf{125.663706}$
+   - Construct transparent discrete PI controllers with forward-Euler integrators and standard `Saturation` blocks (`0` to `1.5A` on $I_{ref}$, `2%` to `90%` on duty cycle).
+   - Generate all scopes and live display blocks:
+     - **`Scope_Vout_Tracking`**: Overlays target $V_{ref} = 5.0\text{V}$ and measured $V_{out}$.
+     - **`Scope_IL_Tracking`**: Overlays $I_{ref}$ command, instantaneous inductor current $I_L$, and the $1.5\text{A}$ safety limit line.
+     - **`Scope_Duty_Cycle`**: Shows the instantaneous PWM duty cycle output.
+     - **`Cascade_Master_Dashboard`**: 3-channel synchronized master scope displaying $V_{out}$, $I_L$, and Duty Cycle simultaneously.
+     - **`Display_Vout_V` & `Display_IL_A`**: Live numerical value readouts on the block diagram canvas.
 
 ---
 
-## 3. Manual Simulink Construction Guide (Block-by-Block)
+## 3. Manual Step-by-Step Construction Guide
 
-If you prefer building the Simulink model manually in MATLAB GUI:
+If building manually in Simulink GUI:
 
-### Step 1: Create a New Model
-- Open Simulink and create a **Blank Model** named `cascade_buck_simulink.slx`.
-- Set Solver parameters: `Solver = ode45`, `Stop time = 0.10` (100 ms).
+### Step 1: Model Solver Configuration
+- Open Simulink and create a blank model: `cascade_buck_simulink.slx`.
+- Set Solver parameters: `Solver = ode45` (or `ode23t`), `Stop time = 0.10` ($100\,\text{ms}$).
 
-### Step 2: Add Control Loop Blocks
-1. **Outer Voltage Loop (1 kHz)**:
-   - Add `Discrete PID Controller` from `Simulink / Discrete`.
-   - Set `P = 0.5906`, `I = 125.66`, `D = 0`.
-   - Set `Sample time = 0.001` (1 ms).
-   - Under **Output Limits**: Check **Limit output**, set `Upper limit = 1.5` (Max 1.5A Clamp), `Lower limit = 0`.
+### Step 2: Outer Voltage Loop (1 kHz / 1 ms)
+1. Add `Step` block (`Vref_Target`): Time = 0, Value = 5.0.
+2. Add `Sum` block (`+-`) for voltage error $e_v = V_{ref} - V_{out}$.
+3. Add `Gain` block (`Kp_v_Gain`): Value = `0.590619`.
+4. Add `Gain` block (`Ki_v_Gain`): Value = `125.663706`.
+5. Add `Discrete-Time Integrator` (`Outer_Integrator`): Sample time = `0.001` ($1\,\text{ms}$), Method = `Forward Euler`.
+6. Add `Sum` block (`++`) to combine P + I outputs.
+7. Add `Saturation` block (`Iref_Safety_Clamp`): Upper Limit = `1.5` ($1.5\text{A}$), Lower Limit = `0.0`.
 
-2. **Inner Current Loop (10 kHz)**:
-   - Add `Discrete PID Controller` from `Simulink / Discrete`.
-   - Set `P = 0.1047`, `I = 22.28`, `D = 0`.
-   - Set `Sample time = 0.0001` (100 $\mu$s).
-   - Under **Output Limits**: Check **Limit output**, set `Upper limit = 0.90` (90% Max Duty), `Lower limit = 0.02` (2% Min Duty).
+### Step 3: Inner Current Loop (10 kHz / 100 $\mu$s)
+1. Add `Sum` block (`+-`) for current error $e_i = I_{ref} - I_L$.
+2. Add `Gain` block (`Kp_i_Gain`): Value = `0.104720`.
+3. Add `Gain` block (`Ki_i_Gain`): Value = `22.280799`.
+4. Add `Discrete-Time Integrator` (`Inner_Integrator`): Sample time = `0.0001` ($100\,\mu\text{s}$), Method = `Forward Euler`.
+5. Add `Gain` block (`Feedforward_Gain`): Value = `1 / 12.0 = 0.083333` ($V_{out} / V_{in}$).
+6. Add `Sum` block (`++`) to combine P + I + Feedforward outputs.
+7. Add `Saturation` block (`PWM_Duty_Clamp`): Upper Limit = `0.90` ($90\%$), Lower Limit = `0.02` ($2\%$).
 
-3. **Feedforward Term**:
-   - Add a `Gain` block set to `1 / Vin = 1/12 = 0.08333`.
-   - Connect $V_{out}$ feedback to this gain and add its output to the inner loop duty output.
-
-### Step 3: Add Plant Transfer Functions
-1. **Current Dynamics $G_{id}(s)$**:
-   - Add `Transfer Fcn` block.
-   - Numerator: `[12.0]` ($V_{in}$).
-   - Denominator: `[100e-6  0]` ($s L$).
-   - Output: Inductor current $I_L$.
-
-2. **Voltage Dynamics $G_{vi}(s)$**:
-   - Add `Transfer Fcn` block.
-   - Numerator: `[1]`.
-   - Denominator: `[470e-6  0.1]` ($s C + 1/R$).
-   - Output: Capacitor voltage $V_{out}$.
+### Step 4: Buck Plant Transfer Functions
+1. **Inductor Current Plant $G_{id}(s)$**:
+   - `Transfer Fcn`: Numerator = `[12.0]`, Denominator = `[100e-6  0]`.
+2. **Output Voltage Plant $G_{vi}(s)$**:
+   - `Transfer Fcn`: Numerator = `[1]`, Denominator = `[470e-6  0.1]`.
 
 ---
 
-## 4. Simscape Electrical Physical Circuit Implementation
+## 4. Physical Simscape Electrical Model Setup
 
-For a physical circuit simulation using Simscape components (MOSFETs, Diodes, Inductors, and Capacitors):
+For physical power stage simulation using real power electronics components:
 
 ```
                        +12V DC Supply
@@ -118,21 +123,11 @@ For a physical circuit simulation using Simscape components (MOSFETs, Diodes, In
              [ Voltage Measurement ]---> Vout to Outer Loop
 ```
 
-### Simscape Library Blocks Required:
-- **DC Voltage Source**: `Simscape / Electrical / Specialized Power Systems / Fundamental Blocks / Electrical Sources` ($12\text{V}$).
-- **Power FET / MOSFET**: Set $R_{on} = 0.04\,\Omega$.
-- **Diode**: Set forward voltage $V_f = 0.6\text{V}$ (Schottky).
-- **Series RLC Branch**: Configure as Inductor ($100\,\mu\text{H}$) and Capacitor ($470\,\mu\text{F}$).
-- **PWM Generator (DC-DC)**: Set switching frequency $f_{sw} = 100\,\text{kHz}$.
-- **powergui**: Add `powergui` block to solver root set to `Continuous` or `Discrete` ($T_s = 1\,\mu\text{s}$).
-
 ---
 
-## 5. Verification & Demonstration Results
+## 5. Demonstration & Verification Checkpoints
 
-When you run the simulation for $100\,\text{ms}$, observe the scopes:
-
-1. **Scope 1 ($V_{out}$)**: Ramps smoothly from $0\text{V}$ to $5.00\text{V}$ within $2.78\,\text{ms}$ with **zero overshoot**.
-2. **Scope 2 ($I_L$ vs $I_{ref}$)**: Shows the 10 kHz inner loop tracking the outer command current with fast dynamic response.
-3. **Step Load Test ($t = 40\,\text{ms}$)**: When load steps from $10\,\Omega$ to $3.33\,\Omega$ ($1.5\text{A}$ demand), $V_{out}$ experiences a tiny $<50\,\text{mV}$ dip and recovers in $<1.5\,\text{ms}$.
-4. **Short Circuit Protection Test ($R_{load} = 1.0\,\Omega$)**: $I_{ref}$ hits the **$1.50\text{A}$ hard clamp boundary**, holding $I_L$ strictly at $1.5\text{A}$ and protecting the power stage.
+When you run the simulation:
+1. **$V_{out}$ Tracking**: Output voltage rises smoothly to $5.00\text{V}$ in $\approx 2.7\,\text{ms}$ with zero overshoot.
+2. **$I_L$ Dynamics**: Inductor current shows rapid response tracking $I_{ref}$.
+3. **Overcurrent Clamping Test**: Set load resistor to $1.0\,\Omega$. Observe that $I_L$ is **firmly clamped at exactly $1.50\text{A}$**, demonstrating software overcurrent protection.
