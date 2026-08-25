@@ -1,6 +1,6 @@
 /* 
- * CASCADE BUCK CONTROL STUDIO - RED, BLACK & WHITE THEME
- * Layout: Original First Version Layout Architecture
+ * CASCADE BUCK CONTROL STUDIO - STYLESHEET
+ * High-Contrast Theme: Obsidian Black, Crimson Red (#ff1e42), Emerald Green (#00e676), and Pure White
  */
 
 :root {
@@ -19,12 +19,15 @@
     --color-red-dark: #80001a;
     --color-red-glow: rgba(255, 30, 66, 0.4);
     
+    --color-green: #00e676;
+    --color-green-glow: rgba(0, 230, 118, 0.3);
+    
     --color-white: #ffffff;
     --color-gray: #22222c;
 
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Inter', sans-serif;
-    --font-code: 'Fira Code', monospace;
+    --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-code: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -87,6 +90,7 @@ body {
     justify-content: center;
     color: #fff;
     box-shadow: 0 0 20px var(--color-red-glow);
+    flex-shrink: 0;
 }
 
 .brand-title h1 {
@@ -143,18 +147,6 @@ body {
     50% { transform: scale(1.4); opacity: 0.4; }
 }
 
-.mcu-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.8125rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-}
-
 /* NAVIGATION TABS */
 .nav-tabs {
     display: flex;
@@ -163,13 +155,14 @@ body {
     padding: 6px;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
+    flex-wrap: wrap;
 }
 
 .nav-tab {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 10px 18px;
     background: transparent;
     border: none;
     border-radius: var(--radius-sm);
@@ -199,7 +192,7 @@ body {
     border-radius: var(--radius-lg);
     padding: 20px;
     box-shadow: var(--shadow-card);
-    overflow: hidden; /* Ensures child elements stay 100% inside the card */
+    overflow: hidden;
 }
 
 .card-header {
@@ -231,8 +224,158 @@ body {
 /* TAB 1: SIMULATOR LAYOUT */
 .sim-grid {
     display: grid;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 410px 1fr;
     gap: 20px;
+}
+
+/* RESEARCH CONTRIBUTION DEMO PANEL */
+.research-demo-panel {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-red);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    margin-bottom: 18px;
+    box-shadow: 0 0 15px rgba(255, 30, 66, 0.1);
+}
+
+.demo-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-heading);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    color: var(--color-red);
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+
+.demo-subtext {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
+.demo-btn-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-demo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.demo-icon {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.demo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.demo-text strong {
+    font-family: var(--font-heading);
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.demo-text span {
+    font-size: 0.72rem;
+    opacity: 0.85;
+}
+
+.btn-traditional {
+    background: rgba(255, 30, 66, 0.15);
+    border-color: rgba(255, 30, 66, 0.5);
+    color: #ffffff;
+}
+
+.btn-traditional:hover {
+    background: rgba(255, 30, 66, 0.28);
+    border-color: var(--color-red);
+    box-shadow: 0 0 12px var(--color-red-glow);
+}
+
+.btn-bumpless {
+    background: rgba(0, 230, 118, 0.12);
+    border-color: rgba(0, 230, 118, 0.5);
+    color: #ffffff;
+}
+
+.btn-bumpless:hover {
+    background: rgba(0, 230, 118, 0.25);
+    border-color: var(--color-green);
+    box-shadow: 0 0 12px var(--color-green-glow);
+}
+
+/* DEMO NOTIFICATION BANNER */
+.demo-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.banner-bumpless {
+    background: rgba(0, 230, 118, 0.1);
+    border: 1px solid var(--color-green);
+    color: #ffffff;
+}
+
+.banner-traditional {
+    background: rgba(255, 30, 66, 0.15);
+    border: 1px solid var(--color-red);
+    color: #ffffff;
+    animation: flashBorder 2s infinite;
+}
+
+@keyframes flashBorder {
+    0%, 100% { border-color: var(--color-red); box-shadow: 0 0 10px rgba(255, 30, 66, 0.3); }
+    50% { border-color: #ffffff; box-shadow: 0 0 18px rgba(255, 30, 66, 0.6); }
+}
+
+.banner-icon-badge {
+    font-size: 1.5rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.banner-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.banner-text strong {
+    font-family: var(--font-heading);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.banner-text span {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
 }
 
 /* CONTROL PANEL & SLIDERS */
@@ -244,7 +387,7 @@ body {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--color-red);
+    color: var(--text-muted);
     margin-bottom: 8px;
     display: block;
     font-weight: 700;
@@ -431,7 +574,7 @@ input[type="range"] {
 .waveforms-panel {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
 .metrics-bar {
@@ -512,11 +655,13 @@ input[type="range"] {
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    display: inline-block;
 }
 
 .dot-white { background: #ffffff; box-shadow: 0 0 8px #ffffff; }
 .dot-red { background: var(--color-red); box-shadow: 0 0 8px var(--color-red); }
-.dot-white-dashed { background: #ffffff; }
+.dot-green { background: var(--color-green); box-shadow: 0 0 8px var(--color-green); }
+.dot-white-dashed { background: #ffffff; border: 1px dashed #ffffff; }
 .dot-red-dash { background: var(--color-red-dark); }
 
 .chart-legend {
@@ -547,9 +692,178 @@ canvas {
     width: 100%;
     height: auto;
     display: block;
+    border-radius: var(--radius-sm);
 }
 
-/* TAB 2: ARCHITECTURE DIAGRAM */
+/* TAB 2: CC/CV COMPARISON TAB */
+.comparison-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.comparison-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.comp-card {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.card-traditional {
+    border-color: rgba(255, 30, 66, 0.4);
+}
+
+.card-proposed {
+    border-color: rgba(0, 230, 118, 0.4);
+    box-shadow: 0 0 20px rgba(0, 230, 118, 0.08);
+}
+
+.comp-card-head h3 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin-top: 6px;
+}
+
+.comp-badge {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    display: inline-block;
+}
+
+.badge-bad {
+    background: rgba(255, 30, 66, 0.2);
+    color: var(--color-red);
+    border: 1px solid var(--color-red);
+}
+
+.badge-good {
+    background: rgba(0, 230, 118, 0.2);
+    color: var(--color-green);
+    border: 1px solid var(--color-green);
+}
+
+.comp-visual-box {
+    background: #000000;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+.comp-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.comp-list li {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.btn-comp-trad {
+    background: rgba(255, 30, 66, 0.2);
+    border: 1px solid var(--color-red);
+    color: #ffffff;
+    margin-top: auto;
+}
+
+.btn-comp-trad:hover {
+    background: var(--color-red);
+}
+
+.btn-comp-bump {
+    background: rgba(0, 230, 118, 0.2);
+    border: 1px solid var(--color-green);
+    color: #ffffff;
+    margin-top: auto;
+}
+
+.btn-comp-bump:hover {
+    background: var(--color-green);
+    color: #000000;
+}
+
+/* BENCHMARK TABLE */
+.comp-table-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+}
+
+.comp-table-card h3 {
+    font-size: 1.05rem;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+}
+
+.benchmark-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    text-align: left;
+}
+
+.benchmark-table th {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+    font-family: var(--font-heading);
+}
+
+.benchmark-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.text-danger {
+    color: var(--color-red);
+    font-weight: 700;
+    font-family: var(--font-code);
+}
+
+.text-success {
+    color: var(--color-green);
+    font-weight: 700;
+    font-family: var(--font-code);
+}
+
+.text-highlight {
+    color: #ffffff;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* TAB 3: ARCHITECTURE DIAGRAM */
 .architecture-diagram {
     display: flex;
     align-items: center;
@@ -629,6 +943,8 @@ canvas {
     align-items: center;
     color: var(--color-red);
     padding: 0 10px;
+    font-size: 1.2rem;
+    font-weight: 700;
 }
 
 .signal-label {
@@ -674,164 +990,9 @@ canvas {
     color: var(--text-secondary);
 }
 
-/* TAB 3: FIRMWARE & PINS */
-.firmware-grid {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 20px;
-}
-
-.pinout-card {
-    max-width: 100%;
-    overflow: hidden;
-}
-
-.pin-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 16px;
-}
-
-.pin-item {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-}
-
-.pin-tag {
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-family: var(--font-code);
-    font-size: 0.75rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.pin-pwm { background: var(--color-red); color: #ffffff; }
-.pin-analog { background: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.3); }
-
-.pin-desc strong { font-size: 0.875rem; color: var(--text-primary); display: block; }
-.pin-desc p { font-size: 0.8125rem; color: var(--text-muted); }
-
-/* FIXED TIMER SPECS BOX (STAYS 100% INSIDE CARD) */
-.timer-specs {
-    margin-top: 20px;
-    background: #000000;
-    border: 1px solid var(--color-red);
-    padding: 12px;
-    border-radius: var(--radius-sm);
-    max-width: 100%;
-    overflow-x: auto;
-    box-shadow: 0 0 14px rgba(255, 30, 66, 0.2);
-}
-
-.timer-specs-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: var(--font-heading);
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-}
-
-.badge-tag-red {
-    background: var(--color-red);
-    color: #ffffff;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.6875rem;
-}
-
-.timer-specs pre {
-    margin: 0;
-    white-space: pre-wrap;
-    word-break: break-word;
-    overflow-x: auto;
-}
-
-.timer-specs code {
-    font-family: var(--font-code);
-    font-size: 0.78rem;
-    color: #ffffff;
-    line-height: 1.5;
-}
-
-/* CODE CONTAINER */
-.code-card {
-    overflow: hidden;
-}
-
-.code-container {
-    background: #000000;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    max-height: 520px;
-    overflow-y: auto;
-}
-
-pre code {
-    font-family: var(--font-code);
-    font-size: 0.8125rem;
-    color: #ffffff;
-    line-height: 1.6;
-}
-
-/* TAB 4: ROADMAP */
-.roadmap-steps {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.roadmap-card {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    position: relative;
-}
-
-.stage-number {
-    display: inline-block;
-    padding: 4px 10px;
-    background: var(--color-red);
-    color: #fff;
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 0.75rem;
-    border-radius: 4px;
-    margin-bottom: 12px;
-}
-
-.roadmap-card h3 {
-    font-size: 1rem;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-}
-
-.roadmap-card p {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-}
-
-.badge-done {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.75rem;
-    color: var(--color-red);
-    font-weight: 700;
-}
-
 /* RESPONSIVE BREAKPOINTS */
 @media (max-width: 1024px) {
-    .sim-grid, .firmware-grid, .roadmap-steps {
+    .sim-grid, .comparison-cards-grid {
         grid-template-columns: 1fr;
     }
     .metrics-bar {
@@ -840,8 +1001,5 @@ pre code {
     .architecture-diagram {
         flex-direction: column;
         gap: 16px;
-    }
-    .signal-arrow {
-        transform: rotate(90deg);
     }
 }
