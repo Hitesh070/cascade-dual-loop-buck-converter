@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cascade Dual-Loop Buck Converter | Control Systems Studio</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <title>Cascade Buck Converter Control</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,99 +11,41 @@
         <!-- HEADER -->
         <header class="app-header">
             <div class="brand-title">
-                <div class="logo-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                </div>
-                <div>
-                    <h1>CASCADE <span class="highlight-red">BUCK</span> CONTROL STUDIO</h1>
-                    <p class="subtitle">Dual-Loop Voltage-Current Controlled DC-DC Buck Converter (12V → 5V, 1.5A Limit)</p>
-                </div>
+                <h1>Cascade Voltage-Current Control of a Buck Converter</h1>
+                <p class="subtitle">12V to 5V DC-DC Step-Down Converter with 1.5A Peak Current Clamping</p>
             </div>
-
             <div class="header-status">
-                <div class="status-badge live-status">
-                    <span class="pulse-dot"></span>
-                    <span id="system-status-text">10 kHz Inner ISR / 1 kHz Outer Loop Active</span>
-                </div>
+                <span class="status-badge">Inner Loop: 10 kHz | Outer Loop: 1 kHz</span>
             </div>
         </header>
 
         <!-- NAVIGATION TABS -->
         <nav class="nav-tabs">
-            <button class="nav-tab active" data-tab="simulator">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                Real-Time Simulator
-            </button>
-            <button class="nav-tab" data-tab="comparison">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
-                CC/CV Transition Demo
-            </button>
-            <button class="nav-tab" data-tab="blockdiagram">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
-                Control Architecture
-            </button>
+            <button class="nav-tab active" data-tab="simulator">Simulator</button>
+            <button class="nav-tab" data-tab="architecture">Control Architecture</button>
+            <button class="nav-tab" data-tab="comparison">Performance Comparison</button>
         </nav>
 
-        <!-- MAIN CONTENT AREA -->
+        <!-- MAIN CONTENT -->
         <main class="main-content">
-
-            <!-- TAB 1: REAL-TIME SIMULATOR -->
+            <!-- TAB 1: SIMULATOR -->
             <section id="tab-simulator" class="tab-panel active">
                 <div class="sim-grid">
-                    <!-- LEFT COLUMN: CONTROLS & SLIDERS -->
-                    <div class="control-panel glass-card">
+                    <!-- LEFT COLUMN: CONTROLS -->
+                    <div class="card">
                         <div class="card-header">
-                            <h2>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-                                System &amp; Control Parameters
-                            </h2>
-                            <button id="btn-reset-params" class="btn-ghost" title="Reset Default Parameters">
-                                ↺ Reset
-                            </button>
+                            <h2>Parameters &amp; Controls</h2>
+                            <button id="btn-reset-params" class="btn btn-sm">Reset</button>
                         </div>
 
-                        <!-- RESEARCH CONTRIBUTION DEMO PANEL -->
-                        <div class="research-demo-panel">
-                            <div class="demo-header">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"></path><path d="M14 9.3V2"></path><path d="M8.5 2h7"></path><path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path><path d="M5.52 16h12.96"></path></svg>
-                                <span>RESEARCH CONTRIBUTION DEMO:</span>
-                            </div>
-                            <p class="demo-subtext">Compare Traditional Mode-Switching Handover vs. Proposed Soft-Clamped Cascade Control:</p>
-                            <div class="demo-btn-grid">
-                                <button id="btn-demo-traditional" class="btn-demo btn-traditional" title="Simulate traditional controller handover with current spikes">
-                                    <div class="demo-icon">⚠️</div>
-                                    <div class="demo-text">
-                                        <strong>Traditional CC-to-CV</strong>
-                                        <span>Bumpy / Spiked Handover (~3.35A Surge)</span>
-                                    </div>
-                                </button>
-                                <button id="btn-demo-bumpless" class="btn-demo btn-bumpless" title="Simulate proposed cascade soft-clamping with smooth transition">
-                                    <div class="demo-icon">🛡️</div>
-                                    <div class="demo-text">
-                                        <strong>Proposed Soft-Clamper</strong>
-                                        <span>Inherent Bumpless CC/CV (Zero Spike)</span>
-                                    </div>
-                                </button>
-                            </div>
+                        <!-- TEST ACTION BUTTONS -->
+                        <div class="btn-group">
+                            <button id="btn-softstart" class="btn">Soft-Start (0V to 5V)</button>
+                            <button id="btn-step-load" class="btn btn-primary">Step Load (10Ω to 3.3Ω)</button>
+                            <button id="btn-short-circuit" class="btn btn-danger">Short Circuit Fault (1.0Ω)</button>
                         </div>
 
-                        <!-- STANDARD PRESET ACTIONS -->
-                        <div class="preset-actions">
-                            <span class="action-label">Standard Test Events:</span>
-                            <div class="btn-group">
-                                <button id="btn-softstart" class="btn-action btn-white">
-                                    ▶ Soft-Start Ramp (0 → 5V)
-                                </button>
-                                <button id="btn-step-load" class="btn-action btn-red">
-                                    ⚡ Step Load (10Ω → 3.3Ω)
-                                </button>
-                                <button id="btn-short-circuit" class="btn-action btn-outline-red">
-                                    ⛔ Short Circuit (1.0Ω)
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- SLIDERS CONTAINER -->
+                        <!-- SLIDERS -->
                         <div class="sliders-wrapper">
                             <div class="slider-group">
                                 <div class="slider-header">
@@ -119,16 +57,16 @@
 
                             <div class="slider-group">
                                 <div class="slider-header">
-                                    <label for="slider-vref">Target Voltage (Vref)</label>
-                                    <span id="val-vref" class="slider-val text-red">5.0 V</span>
+                                    <label for="slider-vref">Target Output (Vref)</label>
+                                    <span id="val-vref" class="slider-val">5.0 V</span>
                                 </div>
                                 <input type="range" id="slider-vref" min="1.0" max="10.0" step="0.1" value="5.0">
                             </div>
 
                             <div class="slider-group">
                                 <div class="slider-header">
-                                    <label for="slider-irefmax">Current Safety Limit (Iref max)</label>
-                                    <span id="val-irefmax" class="slider-val highlight-danger">1.50 A</span>
+                                    <label for="slider-irefmax">Current Limit (Iref Max)</label>
+                                    <span id="val-irefmax" class="slider-val">1.50 A</span>
                                 </div>
                                 <input type="range" id="slider-irefmax" min="0.5" max="3.0" step="0.1" value="1.5">
                             </div>
@@ -158,306 +96,230 @@
                                 </div>
                             </div>
 
-                            <!-- ADVANCED GAINS TUNING -->
+                            <!-- PI GAINS ACCORDION -->
                             <div class="accordion-section">
                                 <button class="accordion-toggle" id="toggle-gains">
-                                    <span>⚙️ Advanced PI Gain Tuning</span>
+                                    <span>PI Controller Gains</span>
                                     <span class="chevron">▼</span>
                                 </button>
                                 <div class="accordion-content hidden" id="gains-content">
-                                    <div class="gain-grid">
-                                        <div class="gain-box">
-                                            <h4 class="text-red">Outer Voltage Loop (1 kHz)</h4>
-                                            <div class="slider-group">
-                                                <label>Kp_v: <span id="val-kpv" class="text-red">0.5906</span></label>
-                                                <input type="range" id="slider-kpv" min="0.05" max="2.0" step="0.01" value="0.5906">
+                                    <div class="gain-box">
+                                        <h4>Outer Voltage Loop (1 kHz)</h4>
+                                        <div class="slider-group">
+                                            <div class="slider-header">
+                                                <label>Kp_v</label>
+                                                <span id="val-kpv" class="slider-val">0.5906</span>
                                             </div>
-                                            <div class="slider-group">
-                                                <label>Ki_v: <span id="val-kiv" class="text-red">125.66</span></label>
-                                                <input type="range" id="slider-kiv" min="10.0" max="500.0" step="1.0" value="125.66">
-                                            </div>
+                                            <input type="range" id="slider-kpv" min="0.05" max="2.0" step="0.01" value="0.5906">
                                         </div>
-                                        <div class="gain-box">
-                                            <h4 class="text-white">Inner Current Loop (10 kHz)</h4>
-                                            <div class="slider-group">
-                                                <label>Kp_i: <span id="val-kpi">0.1047</span></label>
-                                                <input type="range" id="slider-kpi" min="0.01" max="0.5" step="0.005" value="0.1047">
+                                        <div class="slider-group" style="margin-top: 6px;">
+                                            <div class="slider-header">
+                                                <label>Ki_v</label>
+                                                <span id="val-kiv" class="slider-val">125.66</span>
                                             </div>
-                                            <div class="slider-group">
-                                                <label>Ki_i: <span id="val-kii">22.28</span></label>
-                                                <input type="range" id="slider-kii" min="1.0" max="100.0" step="0.5" value="22.28">
-                                            </div>
+                                            <input type="range" id="slider-kiv" min="10.0" max="500.0" step="1.0" value="125.66">
                                         </div>
                                     </div>
-                                    <button id="btn-recalc-gains" class="btn-secondary btn-full">
-                                        ✨ Auto-Calculate Optimal Gains (10× Rule)
+
+                                    <div class="gain-box">
+                                        <h4>Inner Current Loop (10 kHz)</h4>
+                                        <div class="slider-group">
+                                            <div class="slider-header">
+                                                <label>Kp_i</label>
+                                                <span id="val-kpi" class="slider-val">0.1047</span>
+                                            </div>
+                                            <input type="range" id="slider-kpi" min="0.01" max="0.5" step="0.005" value="0.1047">
+                                        </div>
+                                        <div class="slider-group" style="margin-top: 6px;">
+                                            <div class="slider-header">
+                                                <label>Ki_i</label>
+                                                <span id="val-kii" class="slider-val">22.28</span>
+                                            </div>
+                                            <input type="range" id="slider-kii" min="1.0" max="100.0" step="0.5" value="22.28">
+                                        </div>
+                                    </div>
+
+                                    <button id="btn-recalc-gains" class="btn btn-full btn-sm">
+                                        Recalculate Optimal Gains
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- RIGHT COLUMN: CANVASES & WAVEFORMS -->
+                    <!-- RIGHT COLUMN: METRICS & CHARTS -->
                     <div class="waveforms-panel">
-                        <!-- REALTIME METRICS BAR -->
-                        <div class="metrics-bar glass-card">
+                        <!-- METRICS BAR -->
+                        <div class="card metrics-bar">
                             <div class="metric-item">
-                                <span class="metric-label">Measured Vout</span>
-                                <span id="metric-vout" class="metric-value color-white">5.00 V</span>
+                                <span class="metric-label">Output Voltage (Vout)</span>
+                                <span id="metric-vout" class="metric-value">5.00 V</span>
                             </div>
                             <div class="metric-item">
-                                <span class="metric-label">Inductor Current IL</span>
-                                <span id="metric-il" class="metric-value color-red">0.50 A</span>
+                                <span class="metric-label">Inductor Current (IL)</span>
+                                <span id="metric-il" class="metric-value">0.50 A</span>
                             </div>
                             <div class="metric-item">
-                                <span class="metric-label">Clamped Target Iref</span>
-                                <span id="metric-iref" class="metric-value color-white">0.50 A</span>
+                                <span class="metric-label">Target Current (Iref)</span>
+                                <span id="metric-iref" class="metric-value">0.50 A</span>
                             </div>
                             <div class="metric-item">
                                 <span class="metric-label">PWM Duty Cycle</span>
-                                <span id="metric-duty" class="metric-value color-red">41.7 %</span>
+                                <span id="metric-duty" class="metric-value">41.7 %</span>
                             </div>
                             <div class="metric-item">
-                                <span class="metric-label">Operating Mode</span>
-                                <span id="metric-mode" class="metric-badge badge-success">NORMAL REGULATION</span>
+                                <span class="metric-label">Status</span>
+                                <span id="metric-mode" class="metric-badge badge-success">Normal Regulation</span>
                             </div>
                         </div>
 
-                        <!-- ACTIVE EXPERIMENT BANNER -->
-                        <div id="demo-notification-banner" class="demo-banner banner-bumpless">
-                            <div class="banner-icon-badge" id="banner-icon-badge">🛡️</div>
-                            <div class="banner-text">
-                                <strong id="banner-title">PROPOSED CASCADE SOFT-CLAMPING ACTIVE</strong>
-                                <span id="banner-desc">Inherent continuous saturation prevents mode-switching transients. Peak current is strictly bounded at 1.50A.</span>
-                            </div>
-                        </div>
-
-                        <!-- CANVAS 1: Output Voltage -->
-                        <div class="chart-card glass-card">
+                        <!-- CHART 1: VOUT -->
+                        <div class="card chart-card">
                             <div class="chart-header">
                                 <div class="chart-title">
-                                    <span class="legend-dot dot-white"></span>
-                                    <h3>Output Voltage Vout (V) vs Target Vref</h3>
-                                </div>
-                                <span class="time-scale">Time Window: 100 ms | Sampling: 10 kHz</span>
-                            </div>
-                            <div class="canvas-container">
-                                <canvas id="canvas-vout" width="800" height="190"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- CANVAS 2: Inductor Current & Clamped Reference -->
-                        <div class="chart-card glass-card">
-                            <div class="chart-header">
-                                <div class="chart-title">
-                                    <span class="legend-dot dot-red"></span>
-                                    <h3>Inductor Current IL (A) &amp; Clamped Reference Iref</h3>
+                                    <h3>Output Voltage Vout (V)</h3>
                                 </div>
                                 <div class="chart-legend">
-                                    <span class="legend-item"><span class="legend-dot dot-red"></span> IL (Measured)</span>
-                                    <span class="legend-item"><span class="legend-dot dot-white-dashed"></span> Iref (Command)</span>
-                                    <span class="legend-item"><span class="legend-dot dot-red-dash"></span> 1.5A Safety Clamp</span>
+                                    <span class="legend-item"><span class="legend-dot dot-blue"></span> Measured Vout</span>
+                                    <span class="legend-item"><span class="legend-dot dot-dashed"></span> Target Vref</span>
                                 </div>
+                                <span class="time-scale">100 ms window</span>
                             </div>
                             <div class="canvas-container">
-                                <canvas id="canvas-current" width="800" height="190"></canvas>
+                                <canvas id="canvas-vout" width="800" height="170"></canvas>
                             </div>
                         </div>
 
-                        <!-- CANVAS 3: PWM Duty Cycle -->
-                        <div class="chart-card glass-card">
+                        <!-- CHART 2: CURRENT -->
+                        <div class="card chart-card">
                             <div class="chart-header">
                                 <div class="chart-title">
-                                    <span class="legend-dot dot-white"></span>
-                                    <h3>PWM Duty Cycle (%)</h3>
+                                    <h3>Inductor Current IL (A)</h3>
                                 </div>
-                                <span id="pwm-freq-label" class="time-scale">PWM Frequency: 10.0 kHz</span>
+                                <div class="chart-legend">
+                                    <span class="legend-item"><span class="legend-dot dot-red"></span> Measured IL</span>
+                                    <span class="legend-item"><span class="legend-dot dot-gray"></span> Target Iref</span>
+                                    <span class="legend-item"><span class="legend-dot dot-dashed"></span> 1.5A Limit</span>
+                                </div>
+                                <span class="time-scale">100 ms window</span>
                             </div>
                             <div class="canvas-container">
-                                <canvas id="canvas-duty" width="800" height="130"></canvas>
+                                <canvas id="canvas-current" width="800" height="170"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- CHART 3: PWM DUTY -->
+                        <div class="card chart-card">
+                            <div class="chart-header">
+                                <div class="chart-title">
+                                    <h3>PWM Duty Cycle (%)</h3>
+                                </div>
+                                <span class="time-scale">Switching Frequency: 10 kHz</span>
+                            </div>
+                            <div class="canvas-container">
+                                <canvas id="canvas-duty" width="800" height="110"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 2: CC/CV COMPARISON & FACULTY PRESENTATION TAB -->
-            <section id="tab-comparison" class="tab-panel">
-                <div class="comparison-container glass-card">
+            <!-- TAB 2: ARCHITECTURE -->
+            <section id="tab-architecture" class="tab-panel">
+                <div class="card architecture-container">
                     <div class="card-header">
-                        <h2>
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><line x1="6" y1="9" x2="6" y2="21"></line></svg>
-                            CC-to-CV Mode Transition: Literature Gap vs. Proposed Solution
-                        </h2>
-                        <p class="subtitle">Direct solution to the 2.0A switching transient identified in Akhtar et al. (IJIE 2024)</p>
+                        <h2>Cascade Dual-Loop Control Structure</h2>
                     </div>
 
-                    <div class="comparison-cards-grid">
-                        <!-- TRADITIONAL APPROACH CARD -->
-                        <div class="comp-card card-traditional">
-                            <div class="comp-card-head">
-                                <span class="comp-badge badge-bad">LITERATURE APPROACH (Akhtar et al. 2024)</span>
-                                <h3>Traditional Dual-Controller Switching</h3>
-                            </div>
-                            <div class="comp-visual-box">
-                                <div>[CV Loop PI] ──┐</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── [HARD SWITCH] ──> [PWM Duty]</div>
-                                <div>[CC Loop PI] ──┘</div>
-                            </div>
-                            <ul class="comp-list">
-                                <li>❌ <strong>Hard Switch Discontinuity:</strong> Employs two separate PI controllers with binary handover multiplexer.</li>
-                                <li>❌ <strong>Integrator Windup Spikes:</strong> Inactive CV integrator accumulates error during CC mode, releasing a <strong>violent +1.8A to +2.5A current surge</strong> upon transition.</li>
-                                <li>❌ <strong>Voltage Bounce:</strong> Creates transient overshoot and settling delays (> 15 ms).</li>
-                            </ul>
-                            <button id="btn-trigger-comp-trad" class="btn-action btn-comp-trad">
-                                ▶ Run Traditional Spiked Simulation
-                            </button>
+                    <div class="diagram-flow">
+                        <div class="diagram-node">
+                            <h4>Voltage Reference</h4>
+                            <span class="node-sub">Vref = 5.0 V</span>
                         </div>
-
-                        <!-- PROPOSED APPROACH CARD -->
-                        <div class="comp-card card-proposed">
-                            <div class="comp-card-head">
-                                <span class="comp-badge badge-good">PROPOSED NOVELTY (Our Work)</span>
-                                <h3>Inherent Soft-Clamped Cascade Control</h3>
-                            </div>
-                            <div class="comp-visual-box">
-                                <div>[Outer V-Loop] ──> [SOFT-CLAMP (1.5A)] ──> [Inner I-Loop] ──> [PWM Duty]</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▲</div>
-                                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Continuous Saturation)</div>
-                            </div>
-                            <ul class="comp-list">
-                                <li>✅ <strong>Unified Cascade Hierarchy:</strong> Single continuous control structure without any discrete mode switches or state resets.</li>
-                                <li>✅ <strong>Inherent Soft Clamping:</strong> CC mode is natural saturation of the outer loop ($I_{ref} = \min(I_{raw}, 1.5\text{A})$); CV mode resumes smoothly when load drops.</li>
-                                <li>✅ <strong>100% Bumpless:</strong> Exactly <strong>0.00A current spike</strong>, zero voltage bounce, and fast &lt; 2.5 ms monotonic settling.</li>
-                            </ul>
-                            <button id="btn-trigger-comp-bump" class="btn-action btn-comp-bump">
-                                ▶ Run Proposed Bumpless Simulation
-                            </button>
+                        <span class="diagram-arrow">➔</span>
+                        <div class="diagram-node">
+                            <h4>Outer Voltage Loop</h4>
+                            <span class="node-sub">1 kHz PI Controller</span>
+                            <div style="font-size: 0.7rem; color: #dc2626; margin-top: 4px; font-weight: bold;">Clamped at 1.5A Max</div>
+                        </div>
+                        <span class="diagram-arrow">➔</span>
+                        <div class="diagram-node">
+                            <h4>Inner Current Loop</h4>
+                            <span class="node-sub">10 kHz PI Controller</span>
+                            <div style="font-size: 0.7rem; color: #2563eb; margin-top: 4px;">+ Feedforward (Vout/Vin)</div>
+                        </div>
+                        <span class="diagram-arrow">➔</span>
+                        <div class="diagram-node">
+                            <h4>Buck Power Stage</h4>
+                            <span class="node-sub">MOSFET, L (100µH), C (470µF)</span>
                         </div>
                     </div>
 
-                    <!-- EXPERIMENTAL METRICS COMPARISON TABLE -->
-                    <div class="comp-table-card">
-                        <h3>📊 Quantitative Performance Benchmark</h3>
-                        <table class="benchmark-table">
+                    <div class="loop-columns">
+                        <div class="loop-box">
+                            <h3>Outer Voltage Loop (1 kHz)</h3>
+                            <ul>
+                                <li>Sampling Rate: Every 1.0 ms</li>
+                                <li>Task: Compares output voltage Vout against target Vref.</li>
+                                <li>Output: Generates target reference current command Iref.</li>
+                                <li>Safety: Hard software saturation on Iref prevents overcurrent damage during short circuits.</li>
+                            </ul>
+                        </div>
+                        <div class="loop-box">
+                            <h3>Inner Current Loop (10 kHz)</h3>
+                            <ul>
+                                <li>Sampling Rate: Every 100 µs (Timer 1 ISR on Arduino Uno)</li>
+                                <li>Task: Tracks actual inductor current IL against Iref command.</li>
+                                <li>Output: Updates PWM duty cycle register directly.</li>
+                                <li>Advantage: Reacts 10x faster than voltage loop, rejecting input line and load disturbances.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: PERFORMANCE COMPARISON -->
+            <section id="tab-comparison" class="tab-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Performance Comparison</h2>
+                    </div>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
+                        Comparison of dual-loop soft-clamping versus traditional single-loop and hard-switched dual-controller methods.
+                    </p>
+
+                    <div class="table-container">
+                        <table>
                             <thead>
                                 <tr>
-                                    <th>Performance Metric</th>
-                                    <th>Traditional CC/CV Switching (Akhtar et al.)</th>
-                                    <th>Proposed Soft-Clamped Cascade (Our Work)</th>
-                                    <th>Improvement</th>
+                                    <th>Metric</th>
+                                    <th>Traditional Hard-Switched (Literature)</th>
+                                    <th>Proposed Soft-Clamped Cascade</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>Peak Current Surge ($\Delta I_L$)</strong></td>
-                                    <td class="text-danger">+1.85 A (Total Peak ~3.35 A)</td>
-                                    <td class="text-success">0.00 A (Strictly 1.500 A Max)</td>
-                                    <td class="text-highlight">100% Spike Elimination</td>
+                                    <td><strong>Peak Current Surge During Step</strong></td>
+                                    <td style="color: #dc2626;">+1.85 A Surge (Peaking at ~3.35 A)</td>
+                                    <td style="color: #16a34a; font-weight: bold;">0.00 A Spike (Strictly 1.500 A Limit)</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Handover Mode Disturbance</strong></td>
-                                    <td class="text-danger">Discontinuous with Voltage Glitch</td>
-                                    <td class="text-success">Continuous &amp; Mathematically Bumpless</td>
-                                    <td class="text-highlight">Seamless Handover</td>
+                                    <td><strong>Mode Handover Disturbance</strong></td>
+                                    <td>Discontinuous with voltage bounce</td>
+                                    <td style="color: #16a34a; font-weight: bold;">Continuous &amp; Bumpless</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Transient Settling Time ($T_s$)</strong></td>
-                                    <td class="text-danger">16.4 ms (Slow Recovery)</td>
-                                    <td class="text-success">2.48 ms (Monotonic Recovery)</td>
-                                    <td class="text-highlight">84.8% Faster Settling</td>
+                                    <td><strong>Transient Settling Time</strong></td>
+                                    <td>16.4 ms</td>
+                                    <td style="color: #16a34a; font-weight: bold;">2.48 ms</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>MOSFET Thermal Breakdown Risk</strong></td>
-                                    <td class="text-danger">High (Spikes exceed rated $I_D$)</td>
-                                    <td class="text-success">Zero (Hard Software Bound)</td>
-                                    <td class="text-highlight">Absolute Protection</td>
+                                    <td><strong>Short-Circuit Protection</strong></td>
+                                    <td>Relies on external thermal fuse / trip</td>
+                                    <td style="color: #16a34a; font-weight: bold;">Inherent cycle-by-cycle software clamp</td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 3: BLOCK DIAGRAM ARCHITECTURE -->
-            <section id="tab-blockdiagram" class="tab-panel">
-                <div class="diagram-container glass-card">
-                    <div class="card-header">
-                        <h2>
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
-                            Interactive Dual-Loop Control Architecture
-                        </h2>
-                        <p>Outer Voltage Loop (1 kHz) generates clamped Iref; Inner Current Loop (10 kHz) regulates PWM duty cycle.</p>
-                    </div>
-
-                    <div class="architecture-diagram">
-                        <div class="node node-input">
-                            <div class="node-title">Voltage Reference</div>
-                            <div class="node-val color-red" id="node-vref">Vref = 5.0 V</div>
-                        </div>
-
-                        <div class="signal-arrow">
-                            ➔
-                        </div>
-
-                        <div class="node node-loop outer-loop-node">
-                            <div class="loop-badge badge-slow">Outer Loop (1 kHz / 1 ms)</div>
-                            <div class="node-title">Voltage PI Controller</div>
-                            <div class="node-sub">Computes needed current Iref</div>
-                            <div class="clamp-box">
-                                🛡️ Clamped: Max <span id="node-clamp">1.50 A</span>
-                            </div>
-                        </div>
-
-                        <div class="signal-arrow">
-                            <span class="signal-label" id="node-iref-val">Iref = 0.50 A</span>
-                            ➔
-                        </div>
-
-                        <div class="node node-loop inner-loop-node">
-                            <div class="loop-badge badge-fast">Inner Loop (10 kHz / 100 µs)</div>
-                            <div class="node-title">Current PI Controller</div>
-                            <div class="node-sub">Adjusts Duty Cycle D directly</div>
-                            <div class="feedforward-tag">+ Feedforward (Vout/Vin)</div>
-                        </div>
-
-                        <div class="signal-arrow">
-                            <span class="signal-label" id="node-duty-val">Duty = 41.7%</span>
-                            ➔
-                        </div>
-
-                        <div class="node node-hardware">
-                            <div class="node-title">Buck Hardware Stage</div>
-                            <div class="node-sub">MOSFET + Driver + L + C</div>
-                            <div class="hw-values">
-                                <div>Vin = 12V</div>
-                                <div>L = 100µH</div>
-                                <div>C = 470µF</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- COMPARISON TABLE -->
-                    <div class="loop-comparison-grid">
-                        <div class="loop-card outer-card">
-                            <h3>⏱️ Outer Voltage Loop (Slow / Strategic)</h3>
-                            <ul>
-                                <li><strong>Sampling Frequency:</strong> 1 kHz (Every 1 ms)</li>
-                                <li><strong>Primary Task:</strong> Compares output voltage Vout against target Vref.</li>
-                                <li><strong>Output Command:</strong> Target inductor current reference Iref.</li>
-                                <li><strong>Safety Protection:</strong> Hard software clamp on Iref prevents MOSFET thermal destruction during short circuits.</li>
-                            </ul>
-                        </div>
-
-                        <div class="loop-card inner-card card-red-border">
-                            <h3 class="color-red">⚡ Inner Current Loop (Fast / Tactical)</h3>
-                            <ul>
-                                <li><strong>Sampling Frequency:</strong> 10 kHz (Every 100 µs in Timer 1 ISR)</li>
-                                <li><strong>Primary Task:</strong> Measures instantaneous inductor current IL, compares with Iref.</li>
-                                <li><strong>Output Command:</strong> Hardware Timer OCR1A PWM register duty cycle.</li>
-                                <li><strong>Bandwidth Advantage:</strong> Absorbs input voltage spikes and sudden load changes instantly.</li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </section>
